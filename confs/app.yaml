@@ -1,0 +1,17 @@
+# Conf names for available models
+available_models:
+  - llama2.yaml
+
+## Conf params for Retrieval
+retrieval:  
+  gte-large:
+    model_id: 'thenlper/gte-large'
+    cores: 
+      - gte-large
+
+retrieval_threshold: 0.72
+retrieval_top_k: 3
+
+# Params to control if external search is to be used
+use_search: True
+show_refs: True
