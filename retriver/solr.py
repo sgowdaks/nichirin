@@ -21,7 +21,7 @@ class SolrRetriever:
         self.logger = logging.getLogger(__name__)
         self.retrieval_conf = self.cfg['retrieval']
         self.retrieval_threshold = self.cfg['retrieval_threshold']
-        self.
+        self.retrieval_top_k = self.cfg['retrieval_top_k']
 
         # Load all available retrieval models separately
         self.retrieval_models = self.load_retrieval_models()
@@ -105,7 +105,7 @@ class SolrRetriever:
         self.logger.info(f"Top retrieval sources: {source_urls}")
         return source_urls
 
-    def get_response(self, query, top_k=3):
+    def get_response(self, query):
         # Combine the two retrieval results
         retrieved_docs = []
 
@@ -122,7 +122,7 @@ class SolrRetriever:
 
         self.logger.info(f"Total {len(retrieved_docs)} docs retrieved from all solr cores.")
         # Retain only top 3 results by score and extract the text only
-        reranked_retrieved_docs = sorted(retrieved_docs, key=lambda x: x[2], reverse=True)[:top_k]
+        reranked_retrieved_docs = sorted(retrieved_docs, key=lambda x: x[2], reverse=True)[:self.retrieval_top_k]
 
         # Check total token size of all retrieved_docs
         context_size = sum(len(doc[0]) for doc in reranked_retrieved_docs)
