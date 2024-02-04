@@ -1,7 +1,3 @@
-# Conf names for available models
-available_models:
-  - llama2.yaml
-
 ## Conf params for Retrieval
 retrieval:  
   gte-large:

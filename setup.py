@@ -22,5 +22,6 @@ setup(
     entry_points={"console_scripts": [
           "run-solr=search.retriever.solr:main",
           "index-solr=search.retriever.solr_index_docs:main",
+          "split-index=search.utils.split:main",
           ]}
 )

@@ -5,6 +5,7 @@ import time
 import torch
 import json
 import argparse
+import os
 
 from pathlib import Path
 
@@ -17,8 +18,6 @@ class SolrIndex:
         self.data_path = data_path
         self.wikidata_path = Path(self.data_path)
         self.solr_url = "http://localhost:8983/solr/" + core
-        self.files = [f for f in self.wikidata_path.glob("*.split")]
-        # pass the folder in which you have all the files
 
     def read_(self):
         stream = self.read_docs(self.data_path)
@@ -31,13 +30,14 @@ class SolrIndex:
         print(f"reading docs from {path}")
         skips = 0
         count = 0
-        tok_file = str(path) + ".tok"
-        ten_file = str(path) + ".pt"
+        tok_file = [f for f in self.wikidata_path.glob("*.split")][0]
+        ten_file = [f for f in self.wikidata_path.glob("*.pt")][0]
         tensor = torch.load(ten_file)
 
         with open(tok_file) as lines:
             for line in lines:
-                id, sen, url, key, sen_count = line.strip().split("\t")
+                print(line.strip().split("\t"))
+                sen, url, key = line.strip().split("\t")
                 data = {
                     "text": sen,
                     "url": url,
