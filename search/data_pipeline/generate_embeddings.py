@@ -88,29 +88,3 @@ class GenerateEmbeddings:
                         embeddings = []
                         torch.save(tensor, str(tsv_file) + '.pt')
 
-
-def main(args):
-    inp_file = args['data_dir']
-    model_id = args['model_path']
-
-    ge = GenerateEmbeddings(model_id)
-    ge.embeddings(inp_file)
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--data-dir',
-        required=True,
-        type=Path,
-        help='give the path of the data directory',
-    )
-    parser.add_argument(
-        '--model-path', default="facebook/contriever", type=str, help='give the model path/name from hugging face'
-    )
-    args = parser.parse_args()
-    return vars(args)
-
-
-if __name__ == '__main__':
-    main(parse_args())

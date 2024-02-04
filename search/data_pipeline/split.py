@@ -82,26 +82,3 @@ def split(files_path):
                         tsv_writer.writerow([key, sen])
                         
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--input',
-        type=Path,
-        required=True,
-        help='give the input file path',
-    )
-    parser.add_argument(
-        '--core',
-        type=str,
-        required=True,
-        help='give the core name',
-    )
-    args = parser.parse_args()
-    return vars(args)
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    split(args['input'])
-    si = SolrIndex(args["input"], args["core"])
-    si.read_()
