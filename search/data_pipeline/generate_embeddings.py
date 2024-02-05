@@ -39,47 +39,24 @@ class GenerateEmbeddings:
         embeddings = []
 
         for tsv_file in tsv_files:
-            if Path(str(tsv_file) + ".tok") not in all_the_files:
-                with open(str(tsv_file) + ".tok", 'w') as output_file:
+            if Path(str(tsv_file) + ".pt") not in all_the_files:
+                # with open(str(tsv_file) + ".tok", 'w') as output_file:
                     with open(tsv_file, encoding='utf-8', errors='ignore') as lines:
-                        tsv_writer = csv.writer(output_file, delimiter='\t')
 
                         dataset = [x for x in lines if x]  # drop empty lines
                         print(f"Num lines {len(dataset)}")
-
-                        count = 0
-                        sentences_with_id = []
-                        for i, sentence in enumerate(dataset):
-                            try:
-                                key, sen = sentence.split('\t')
-                            except ValueError as e:
-                                count += 1
-                                continue
-                            sentences_with_id.append((i, len(sen.split()), sen, url, key, id))
-
-                        print("count ", count)
-                        sorted_sentences = sorted(sentences_with_id, key=lambda x: x[1])
-
-                        max_diff = 10
+                        
                         current_group = []
-                        prev_count = 0
-                        for id, word_count, sentence, url, key, id_ in tqdm(sorted_sentences):
-                            if len(sentence.split(" ")) < 20:
-                                continue
-                            if not current_group:
-                                prev_count = word_count
-                                current_group.append(sentence)
-                            else:
-                                if word_count - prev_count <= max_diff and len(current_group) < 300:
-                                    prev_count = word_count
-                                    current_group.append(sentence)
-                                else:
-                                    embedding = self.get_embeddings(current_group)
-                                    embeddings.append(embedding.detach().cpu())
-                                    current_group = [sentence]
-                                    prev_count = word_count
-                            tsv_writer.writerow([id, sentence, url, key, id_.strip("\n")])
+                        embeddings = []
 
+                        for i, sen, key in enumerate(dataset):                     
+                            if i % 100 == 0:
+                                embedding = self.get_embeddings(current_group)
+                                embeddings.append(embedding.detach().cpu())
+                                current_group = [sen]
+                            else:
+                                current_group.append(sen)
+                                
                         if current_group:
                             embedding = self.get_embeddings(current_group)
                             embeddings.append(embedding.detach().cpu())
