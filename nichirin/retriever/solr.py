@@ -5,7 +5,7 @@ from typing import List
 from datetime import date
 from transformers import AutoTokenizer, AutoModel
 
-from search.utils.data_utils import load_yaml
+from nichirin.utils.data_utils import load_yaml
 import logging
 
 # Use GPU if available else revert to CPU
