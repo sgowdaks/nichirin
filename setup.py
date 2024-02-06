@@ -20,8 +20,8 @@ setup(
     license="Apache",
     install_requires=reqs,
     entry_points={"console_scripts": [
-          "run-solr=search.retriever.solr:main",
-          "index-solr=search.retriever.solr_index_docs:main",
-          "split-index=search.utils.split:main",
+          "run-solr=nichirin.retriever.solr:main",
+          "index-solr=nichirin.retriever.solr_index_docs:main",
+          "split-index=nichirin.utils.split:main",
           ]}
 )
