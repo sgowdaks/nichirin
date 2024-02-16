@@ -1,32 +1,45 @@
 import os
+import argparse
+
 from pathlib import Path
 
-# Get the file path from the user
-file_path = input("Enter the file path: ")
 
-# Check if the file exists
-if not Path(file_path).is_file():
-    print("File not found!")
-    exit(1)
+def partition():
 
-# Get the file size in bytes
-file_size = Path(file_path).stat().st_size
+    file_path = input("Enter the file path: ")
 
-# Print the file size
-print(f"Size of {file_path} is {file_size} bytes.")
+    if not Path(file_path).is_file():
+        print("File not found!")
+        exit(1)
 
-# Partition the file
-# Here, we're creating partitions of size 1K. Adjust as needed.
-with open(file_path, 'rb') as f:
-    i = 0
-    while chunk := f.read(1024):
-        with open(f"part-{i:02}", 'wb') as f_part:
-            f_part.write(chunk)
-        i += 1
+    file_size = Path(file_path).stat().st_size
 
-print("Partitioning completed. Files are named as part-00, part-01, etc.")
+    print(f"Size of {file_path} is {file_size} bytes.")
 
-# Remove the original file
-os.remove(file_path)
+    with open(file_path, 'rb') as f:
+        i = 0
+        while chunk := f.read(1024):
+            with open(f"part-{i:02}", 'wb') as f_part:
+                f_part.write(chunk)
+            i += 1
 
-print("Original file removed.")
+    print("Partitioning completed. Files are named as part-00, part-01, etc.")
+
+    # Remove the original file
+    os.remove(file_path)
+
+    print("Original file removed.")
+
+def main(path): 
+    SOLR_VERSION = os.getenv('SOLR_VERSION', "9.4.0")
+    partition(SOLR_VERSION)
+    
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--path", help="Give the path to data", required=True)
+    args = parser.parse_args()
+    return vars(args)
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(args["path"])

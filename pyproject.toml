@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nichirin"
+version = "0.0.1"
+dependencies = [
+    'torch>=2.0.1',
+    'transformers>=4.21.0'
+]
+
+
+description = """TODO"""
+readme = "README.md"
+requires-python = ">=3.6"
+license = { file = "LICENSE.txt" }
+keywords = [
+        "retrieval augmentation",
+        "vector database",
+        "natural language processing",
+        "machine learning",
+        "deep learning",
+        "artificial intelligence",
+]
+
+authors = [
+    { name = "Shivani Gowda KS", email = "shivanigowdaks@gmail.com" },
+]
+
+maintainers = [
+    { name = "Shivani Gowda KS", email = "shivanigowdaks@gmail.com" }
+]
+
+[tool.setuptools.packages.find]
+include = ["nichirin*"] 
+
+[project.scripts]
+install-solr =" nichirin.scripts.install_solr:main"
+run-solr="nichirin.retriever.solr:main"
+index-solr="nichirin.retriever.solr_index_docs:main"
+split-index="nichirin.utils.split:main"
+
+[tool.setuptools]
+include-package-data = true
