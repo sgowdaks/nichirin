@@ -54,7 +54,7 @@ def add_sha_tocleanfiles(clean_files):
         df['hash'] = df.apply(lambda x: hashlib.sha256(str(x.values).encode()).hexdigest(), axis=1)
         df.to_csv(file, sep='\t', index=False)
 
-def split(files_path):
+def split_data(files_path):
     path = Path(files_path)
     clean_files = [f for f in path.glob('*.tsv')]
     
