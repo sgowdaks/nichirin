@@ -1,5 +1,6 @@
 import os
 import argparse
+import subprocess
 
 from pathlib import Path
 
@@ -17,12 +18,16 @@ def partition(file_path):
     file_size = Path(file_path).stat().st_size
 
     print(f"Size of {file_path} is {file_size} bytes.")
+    
+    #if file size is lesser than 1GB then don't partition
+    if file_size < 1000000000:
+        subprocess.run(["mv", file_path, output_dir], check=True)
 
     with open(file_path, 'rb') as f:       
         i = 0
         chunk = f.read(1000000000)  # read 1 GB at a time
         while chunk:
-            with open(os.path.join(output_dir, f"part-{i:02}"), 'wb') as f_part:
+            with open(os.path.join(output_dir, f"part-{i:02}.tsv"), 'wb') as f_part:
                 f_part.write(chunk)
             i += 1
             chunk = f.read(1000000000)

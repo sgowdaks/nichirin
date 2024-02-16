@@ -37,9 +37,10 @@ include = ["nichirin*"]
 
 [project.scripts]
 install-solr =" nichirin.scripts.install_solr:main"
-run-solr="nichirin.retriever.solr:main"
 index-solr="nichirin.retriever.solr_index_docs:main"
-split-index="nichirin.utils.split:main"
+query-solr="nichirin.retriever.solr:main"
+create-core="nichirin.scripts.create_core:main"
+partition-data="nichirin.scripts.data_partition:main"
 
 [tool.setuptools]
 include-package-data = true
