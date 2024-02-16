@@ -4,24 +4,28 @@ import argparse
 from pathlib import Path
 
 
-def partition():
-
-    file_path = input("Enter the file path: ")
+def partition(file_path):
 
     if not Path(file_path).is_file():
         print("File not found!")
         exit(1)
-
+        
+    output_dir = Path(file_path) / "output_dir"
+    
+    os.makedirs(output_dir)
+      
     file_size = Path(file_path).stat().st_size
 
     print(f"Size of {file_path} is {file_size} bytes.")
 
-    with open(file_path, 'rb') as f:
+    with open(file_path, 'rb') as f:       
         i = 0
-        while chunk := f.read(1024):
-            with open(f"part-{i:02}", 'wb') as f_part:
+        chunk = f.read(1000000000)  # read 1 GB at a time
+        while chunk:
+            with open(os.path.join(output_dir, f"part-{i:02}"), 'wb') as f_part:
                 f_part.write(chunk)
             i += 1
+            chunk = f.read(1000000000)
 
     print("Partitioning completed. Files are named as part-00, part-01, etc.")
 
@@ -32,7 +36,7 @@ def partition():
 
 def main(path): 
     SOLR_VERSION = os.getenv('SOLR_VERSION', "9.4.0")
-    partition(SOLR_VERSION)
+    partition(SOLR_VERSION, path)
     
 def parse_args():
     parser = argparse.ArgumentParser()

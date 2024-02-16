@@ -15,7 +15,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class SolrRetriever:
     def __init__(self, logger=None, cfg=None) -> None:
         if not cfg:
-            cfg = load_yaml("confs/app.yaml")
+            cfg = load_yaml("nichirin/confs/app.yaml")
 
         self.cfg = cfg
         self.logger = logging.getLogger(__name__)
