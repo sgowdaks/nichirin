@@ -2,8 +2,6 @@
 retrieval:  
   gte-large:
     model_id: 'thenlper/gte-large'
-    cores: 
-      - gte-large
 
 retrieval_threshold: 0.72
 retrieval_top_k: 3

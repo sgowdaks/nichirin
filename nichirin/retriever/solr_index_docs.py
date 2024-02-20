@@ -89,8 +89,14 @@ class SolrIndex:
         )
         print(response.status_code, response.text)
         assert response.status_code == 200
+        
 
-
+def main():  
+    args = parse_args()
+    si = SolrIndex(args["data_path"], args["core"])
+    si.read_()
+    
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -105,6 +111,4 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    si = SolrIndex(args["data_path"], args["core"])
-    si.read_()
+    main()

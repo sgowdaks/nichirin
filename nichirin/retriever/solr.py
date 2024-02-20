@@ -4,6 +4,7 @@ import requests
 from typing import List
 from datetime import date
 from transformers import AutoTokenizer, AutoModel
+from pathlib import Path
 
 from nichirin.utils.data_utils import load_yaml
 import logging
@@ -11,28 +12,28 @@ import logging
 # Use GPU if available else revert to CPU
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
 class SolrRetriever:
     def __init__(self, logger=None, cfg=None) -> None:
+        
+        conf_path = Path(__file__).parent.parent / "confs/app.yaml"
+        
         if not cfg:
-            cfg = load_yaml("nichirin/confs/app.yaml")
+            cfg = load_yaml(conf_path)
+            print("cfg loaded")
 
         self.cfg = cfg
-        self.logger = logging.getLogger(__name__)
         self.retrieval_conf = self.cfg["retrieval"]
         self.retrieval_threshold = self.cfg["retrieval_threshold"]
         self.retrieval_top_k = self.cfg["retrieval_top_k"]
 
         # Load all available retrieval models separately
         self.retrieval_models = self.load_retrieval_models()
-        self.logger.info("Retrieval setup complete!\n")
+        print("Retrieval setup complete!\n")
 
     def load_retrieval_models(self) -> dict:
         self.retrieval_model_names = list(self.retrieval_conf.keys())
-        if self.logger:
-            self.logger.info(
-                f"Using {len(self.retrieval_model_names)} models for retrieval - {self.retrieval_model_names}"
-            )
+        
+        print(f"Using {len(self.retrieval_model_names)} models for retrieval - {self.retrieval_model_names}")
 
         retrieval_models = {}
         for model_name in self.retrieval_model_names:
@@ -41,16 +42,16 @@ class SolrRetriever:
                 retrieval_models[model_name + "_tokenizer"],
             ) = self.load_single_model(self.retrieval_conf[model_name]["model_id"])
 
-        # Return a dict of retrieval models and tokenizers
+        # Return a dict of retrieval models and tokenizers      
+        print(retrieval_models)
         return retrieval_models
 
     def load_single_model(self, model_id: str):
         model = AutoModel.from_pretrained(model_id).to(DEVICE)
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(model_id, model_max_length=1024)
         model = model.eval()
         torch.set_grad_enabled(False)
-        if self.logger:
-            self.logger.info(f"Model and tokenizer for {model_id} loaded.")
+        print(f"Model and tokenizer for {model_id} loaded.")
         return model, tokenizer
 
     def mean_pooling(self, token_embeddings, mask):
@@ -69,20 +70,24 @@ class SolrRetriever:
     def retrieve_context(
         self, query, core_name, solr_url, model_name, char_limit=2400
     ) -> List[List[str]]:
-        torch.set_grad_enabled(False)
+        
+        torch.set_grad_enabled(False)     
         embed = self.get_embeddings(
             query,
             model=self.retrieval_models[f"{model_name}_model"],
             tokenizer=self.retrieval_models[f"{model_name}_tokenizer"],
         )
+        
+        print(embed.shape)
+        
         vector = embed.tolist()[0]
         payload = {"query": "{!knn f=vector topK=5}" + str(vector)}
         response = requests.post(solr_url, json=payload).json()
-
+        
         # Extract required field from Solr `response`
         retrieved_docs = response["response"]["docs"]
         all_docs = [
-            [res_["text"], res_["url"], res_["score"], core_name]
+            [res_["text"], res_["score"], core_name]
             for res_ in retrieved_docs
         ]
 
@@ -114,25 +119,25 @@ class SolrRetriever:
         self.logger.info(f"Top retrieval sources: {source_urls}")
         return source_urls
 
-    def get_response(self, query):
+    def get_response(self, query, core_name):
         # Combine the two retrieval results
         retrieved_docs = []
 
         # Search for relevant context using all available retrieval models
         for model_name in self.retrieval_model_names:
-            self.logger.info(f"Embedding query using {model_name}...")
+            print(f"Embedding query using {model_name}...")
 
-            # Search for context in all cores for current retrieval model
-            for core_name in self.retrieval_conf[model_name]["cores"]:
-                solr_url = (
-                    "http://localhost:8983/solr/"
-                    + core_name
-                    + "/select?fl=id,text,score,url"
-                )
-                # TODO: Run this method for all cores concurrently
-                retrieved_docs += self.retrieve_context(
-                    query, core_name, solr_url, model_name
-                )
+            # Search for context in all cores for current retrieval model          
+            solr_url = (
+                "http://localhost:8983/solr/"
+                + core_name
+                + "/select?fl=text,score"
+            )
+            
+            retrieved_docs += self.retrieve_context(
+                query, core_name, solr_url, model_name
+            )
+                
             self.logger.info(f"Retrieved all relevant docs using {model_name}.\n")
 
         self.logger.info(
@@ -169,6 +174,15 @@ class SolrRetriever:
 
         return retrieved_text, top_retrieved_sources
 
+def main(): 
+    args = parse_args()
+    input_sen = args["input_sen"]
+    core_name = args["core_name"]
+
+    solr = SolrRetriever()
+    response, sources = solr.get_response(input_sen, core_name)
+    print(f"Retrieval result:\n{response}\nReferences:\n{sources}") 
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -176,15 +190,17 @@ def parse_args():
         "--input_sen",
         default=str("Avenger Infinity wars movie review"),
         type=str,
-        help="Input the query sentence",
+        help="Input the query sentence"
+    )
+    parser.add_argument(
+        "--core_name",
+        type=str,
+        help="give the core name",
+        required=True
     )
     return vars(parser.parse_args())
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    input_sen = args["input_sen"]
+    main()
 
-    solr = SolrRetriever()
-    response, sources = solr.get_response(input_sen)
-    print(f"Retrieval result:\n{response}\nReferences:\n{sources}")
