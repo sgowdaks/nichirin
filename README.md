@@ -34,3 +34,7 @@
 * `install-solr` to install solr
 * `create-core --core <core name>` to create solr core, 
 * `partition-data --path <path to the dataset>` to partition the data
+
+Contributing and Feedback:
+We welcome contributions! If you’d like to enhance Nichirin or report issues, feel free to submit a pull request.
+For feedback or questions, open an issue on our GitHub repository.
