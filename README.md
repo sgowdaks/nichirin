@@ -9,8 +9,7 @@
 
 2. **Key Features:**
    - **Effortless Indexing**: Users simply provide their data and follow a few straightforward commands mentioned in the documentation.
-   - **Automated Handling**: Nichirin takes care of the indexing process, ensuring optimal performance and efficiency.
-   - **Seamless Integration**: Nichirin seamlessly integrates with your existing Solr setup, enhancing its capabilities.
+   - **Automated Handling**: Nichirin takes care of the indexing process, ensuring optimal performance and efficiency. [WIP]
 
 <!-- '''3. **Getting Started:**
    - **Installation**: Clone this repository and follow the installation instructions in the Installation Guide.
