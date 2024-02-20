@@ -7,7 +7,6 @@ import sys
 import pandas as pd
 
 from pathlib import Path
-from retriever.solr_index_docs import SolrIndex
 
 nltk.download('punkt')
 
@@ -67,16 +66,18 @@ def split_data(files_path):
         if Path(str(clean_file) + ".split") not in all_the_files:
             with open(str(clean_file) + ".split", 'w') as output_file:
                 tsv_writer = csv.writer(output_file, delimiter='\t')
-                row = parse_tsv(clean_file)
-                
-                key = row[-1]
-                
-                for value in row[:-1]:
+                      
+                for row in parse_tsv(clean_file):
+                    row = list(row)
+                    key = row[-1]
                     
-                    result = split_paragraph(value)   
-                     
-                    for i, sen in enumerate(result):                                                      
-                        sen = sen.strip("\n")
-                        tsv_writer.writerow([key, sen])
+                    for value in row[:-1]:
+                        
+                        result = split_paragraph(value)   
+                        
+                        for i, sen in enumerate(result):                                                      
+                            sen = sen.replace('\n', '')
+                            key = key.replace('\n', '')                        
+                            tsv_writer.writerow([key, sen])
                         
 

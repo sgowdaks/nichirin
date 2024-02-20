@@ -3,8 +3,8 @@ import subprocess
 import urllib.request
 
 def download_and_install_solr(solr_version):
-    DOWNLOAD_URL = f"https://archive.apache.org/dist/lucene/solr/{solr_version}/solr-{solr_version}.tgz"
-    
+    DOWNLOAD_URL = f"https://archive.apache.org/dist/solr/solr/{solr_version}/solr-{solr_version}.tgz"
+
     urllib.request.urlretrieve(DOWNLOAD_URL, f'solr-{solr_version}.tgz')
 
     subprocess.run(['tar', 'xzf', f'solr-{solr_version}.tgz'])
@@ -16,7 +16,7 @@ def start_solr(solr_version):
 
 def main():
     
-    SOLR_VERSION = os.getenv('SOLR_VERSION', "9.4.0")
+    SOLR_VERSION = os.getenv('SOLR_VERSION', "9.1.1")
     download_and_install_solr(SOLR_VERSION)
     start_solr(SOLR_VERSION)
 

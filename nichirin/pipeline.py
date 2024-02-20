@@ -1,16 +1,26 @@
 #input should be specific
 import argparse
 
-from nichirin.data_pipeline.generate_embeddings import GenerateEmbeddings
-from nichirin.data_pipeline.split import split_data
+from pathlib import Path
+from .data_pipeline.generate_embeddings import GenerateEmbeddings
+from .data_pipeline.split import split_data
+from .utils.data_utils import load_yaml
 
-
-def main(path):
+def main():
+    args = parse_args()
+    data_path = args['path']
     
-    split_data()
+    conf_path = Path(__file__).parent / "confs/app.yaml"
     
-    create_embeddings = GenerateEmbeddings()
-    create_embeddings.embeddings()
+    assert conf_path.exists(), f"{conf_path.resolve()} does not exist"
+    
+    cfg = load_yaml(conf_path)
+    split_data(data_path)
+    
+    model_id = cfg['retrieval']['gte-large']['model_id']
+    
+    create_embeddings = GenerateEmbeddings(model_id)
+    create_embeddings.embeddings(data_path)
 
         
 def parse_args():
@@ -20,6 +30,5 @@ def parse_args():
     return vars(args)
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args["path"])
+    main()
 

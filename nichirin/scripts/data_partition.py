@@ -11,7 +11,9 @@ def partition(file_path):
         print("File not found!")
         exit(1)
         
-    output_dir = Path(file_path) / "output_dir"
+    directory_path = os.path.dirname(file_path)
+        
+    output_dir = Path(directory_path) / "output_dir"
     
     os.makedirs(output_dir)
       
@@ -22,26 +24,29 @@ def partition(file_path):
     #if file size is lesser than 1GB then don't partition
     if file_size < 1000000000:
         subprocess.run(["mv", file_path, output_dir], check=True)
+        print("File size lesser then 1 GB so did not partition")
+    else:
 
-    with open(file_path, 'rb') as f:       
-        i = 0
-        chunk = f.read(1000000000)  # read 1 GB at a time
-        while chunk:
-            with open(os.path.join(output_dir, f"part-{i:02}.tsv"), 'wb') as f_part:
-                f_part.write(chunk)
-            i += 1
-            chunk = f.read(1000000000)
+        with open(file_path, 'rb') as f:       
+            i = 0
+            chunk = f.read(1000000000)  # read 1 GB at a time
+            while chunk:
+                with open(os.path.join(output_dir, f"part-{i:02}.tsv"), 'wb') as f_part:
+                    f_part.write(chunk)
+                i += 1
+                chunk = f.read(1000000000)
 
-    print("Partitioning completed. Files are named as part-00, part-01, etc.")
+        print("Partitioning completed. Files are named as part-00, part-01, etc.")
 
-    # Remove the original file
-    os.remove(file_path)
+        # Remove the original file
+        os.remove(file_path)
 
-    print("Original file removed.")
+        print("Original file removed.")
 
-def main(path): 
+def main(): 
+    args = parse_args()
     SOLR_VERSION = os.getenv('SOLR_VERSION', "9.4.0")
-    partition(SOLR_VERSION, path)
+    partition(args["path"])
     
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -50,5 +55,4 @@ def parse_args():
     return vars(args)
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args["path"])
+    main()

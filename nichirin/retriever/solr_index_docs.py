@@ -21,8 +21,6 @@ class SolrIndex:
 
     def read_(self):
         stream = self.read_docs(self.data_path)
-        # for file in self.files:
-        #     stream = self.read_docs(file)
         self.index_docs(solr_url=self.solr_url, stream=stream)
         self.commit(solr_url=self.solr_url)
 
@@ -37,10 +35,10 @@ class SolrIndex:
         with open(tok_file) as lines:
             for line in lines:
                 print(line.strip().split("\t"))
-                sen, url, key = line.strip().split("\t")
+                key, sen = line.strip().split("\t")
                 data = {
                     "text": sen,
-                    "url": url,
+                    # "url": url,
                     "vector": tensor[count].tolist(),
                     "id_md5": key,
                 }

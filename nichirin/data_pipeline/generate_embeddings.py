@@ -48,9 +48,11 @@ class GenerateEmbeddings:
                         
                         current_group = []
                         embeddings = []
-
-                        for i, sen, key in enumerate(dataset):                     
-                            if i % 100 == 0:
+                        
+                        for i, line in enumerate(dataset):   
+                            key, sen = line.split("\t")    
+                            sen = sen.replace("\n", "")             
+                            if i % 100 == 0 and current_group:
                                 embedding = self.get_embeddings(current_group)
                                 embeddings.append(embedding.detach().cpu())
                                 current_group = [sen]

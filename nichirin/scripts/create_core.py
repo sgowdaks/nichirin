@@ -14,21 +14,20 @@ def check_solr_status(SOLR_VERSION):
     except requests.exceptions.RequestException as e:
         print(f"Error: {e}")
         check = False
-    
+            
     if not check:
-        subprocess.run(['solr-{SOLR_VERSION}/bin/solr', 'start'])
+        subprocess.run([f'solr-{SOLR_VERSION}/bin/solr', 'start'])
     
 def create_core(SOLR_VERSION, core_name):
         
     solr_dir = f"solr-{SOLR_VERSION}"
-    subprocess.run([f"{solr_dir}/bin/solr", "start"], check=True)
-    core_name = input("Enter the core name: ")
     subprocess.run([f"{solr_dir}/bin/solr", "create", "-c", core_name], check=True)
 
-def main(core_name): 
-    SOLR_VERSION = os.getenv('SOLR_VERSION', "9.4.0")
+def main(): 
+    args = parse_args()
+    SOLR_VERSION = os.getenv('SOLR_VERSION', "9.1.1")
     check_solr_status(SOLR_VERSION)
-    create_core(SOLR_VERSION, core_name)
+    create_core(SOLR_VERSION, (args["core"]))
     
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -37,5 +36,4 @@ def parse_args():
     return vars(args)
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args["core"])
+    main()
