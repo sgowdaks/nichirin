@@ -14,8 +14,7 @@ def download_and_install_solr(solr_version):
 def start_solr(solr_version):
     subprocess.run([f'solr-{solr_version}/bin/solr', 'start'])
 
-def main():
-    
+def main(): 
     SOLR_VERSION = os.getenv('SOLR_VERSION', "9.1.1")
     download_and_install_solr(SOLR_VERSION)
     start_solr(SOLR_VERSION)
