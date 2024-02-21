@@ -105,7 +105,7 @@ def parse_args():
         required=True,
         help="Give the input file path",
     )
-    parser.add_argument("--core", help="Give the solr core name")
+    parser.add_argument("--core", help="Give the solr core name", required=True)
     args = parser.parse_args()
     return vars(args)
 

@@ -84,6 +84,8 @@ class SolrRetriever:
         payload = {"query": "{!knn f=vector topK=5}" + str(vector)}
         response = requests.post(solr_url, json=payload).json()
         
+        print(response)
+        
         # Extract required field from Solr `response`
         retrieved_docs = response["response"]["docs"]
         all_docs = [
@@ -99,7 +101,7 @@ class SolrRetriever:
                 )
                 all_docs[i][0] = all_docs[i][0][:char_limit]
 
-        self.logger.info(
+        print(
             f"Retrieved all docs from {solr_url} using {model_name} embeddings."
         )
         return all_docs
@@ -138,41 +140,36 @@ class SolrRetriever:
                 query, core_name, solr_url, model_name
             )
                 
-            self.logger.info(f"Retrieved all relevant docs using {model_name}.\n")
+            print(f"Retrieved all relevant docs using {model_name}.\n")
 
-        self.logger.info(
-            f"Total {len(retrieved_docs)} docs retrieved from all solr cores."
-        )
+        print(f"Total {len(retrieved_docs)} docs retrieved from all solr cores.")
         # Retain only top 3 results by score and extract the text only
         reranked_retrieved_docs = sorted(
             retrieved_docs, key=lambda x: x[2], reverse=True
         )[: self.retrieval_top_k]
+        
+    
+        print(reranked_retrieved_docs)
 
         # Check total token size of all retrieved_docs
         context_size = sum(len(doc[0]) for doc in reranked_retrieved_docs)
-        self.logger.info(
-            f"Re-ranked retrieved context contains {context_size} chars or  ~{int(context_size/4)} tokens."
-        )
+        print(f"Re-ranked retrieved context contains {context_size} chars or  ~{int(context_size/4)} tokens.")
 
         # Check the top score of the retrieved docs
-        top_ret_score = reranked_retrieved_docs[0][2]
+        top_ret_score = reranked_retrieved_docs[0][1]
+        
+        print(type(top_ret_score), top_ret_score)
 
         if top_ret_score < self.retrieval_threshold:
             # Do not use any context from the retrieval
-            retrieved_text, top_retrieved_sources = [], []
-            self.logger.info(
-                f"Retrieved score is {top_ret_score}, which is less than {self.retrieval_threshold}. Dropping retrieved context."
-            )
+            retrieved_text = []
+            print(f"Retrieved score is {top_ret_score}, which is less than {self.retrieval_threshold}. Dropping retrieved context.")
 
         else:
-            self.logger.info(
-                f"Re-ranked Retrieval docs with top score = {top_ret_score}: {reranked_retrieved_docs}"
-            )
-            top_retrieved_sources = self.get_sources(reranked_retrieved_docs)
-            # Extract only text from the retrieved docs
+            print(f"Re-ranked Retrieval docs with top score = {top_ret_score}: {reranked_retrieved_docs}")
             retrieved_text = [res_[0] for res_ in reranked_retrieved_docs]
 
-        return retrieved_text, top_retrieved_sources
+        return retrieved_text
 
 def main(): 
     args = parse_args()
@@ -180,8 +177,8 @@ def main():
     core_name = args["core_name"]
 
     solr = SolrRetriever()
-    response, sources = solr.get_response(input_sen, core_name)
-    print(f"Retrieval result:\n{response}\nReferences:\n{sources}") 
+    response = solr.get_response(input_sen, core_name)
+    print(f"Retrieval result:\n{response}") 
 
 
 def parse_args():
