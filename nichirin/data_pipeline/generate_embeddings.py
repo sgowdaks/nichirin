@@ -50,7 +50,7 @@ class GenerateEmbeddings:
                         embeddings = []
                         
                         for i, line in enumerate(dataset):   
-                            key, sen = line.split("\t")    
+                            sen, url, hash = line.split("\t")    
                             sen = sen.replace("\n", "")             
                             if i % 100 == 0 and current_group:
                                 embedding = self.get_embeddings(current_group)

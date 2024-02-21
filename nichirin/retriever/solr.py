@@ -133,7 +133,7 @@ class SolrRetriever:
             solr_url = (
                 "http://localhost:8983/solr/"
                 + core_name
-                + "/select?fl=text,score"
+                + "/select?fl=text,score,url"
             )
             
             retrieved_docs += self.retrieve_context(

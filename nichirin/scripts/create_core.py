@@ -22,39 +22,54 @@ def change_schema(core_name):
     # Define the Solr base URL
     solr_base_url = f"http://localhost:8983/solr/{core_name}"
 
+
     # Define the field type definition
-    field_type_definition = {
+    field_type_definitions = [{
         "add-field-type": {
             "name": "knn_vector",
             "class": "solr.DenseVectorField",
             "vectorDimension": 1024,
             "similarityFunction": "cosine"
         }
-    }
+    }]
 
     # Define the field definition
-    field_definition = {
-        "add-field": {
-            "name": "vector",
-            "type": "knn_vector",
-            "indexed": True,
-            "stored": True
+    field_definitions = [
+        {
+            "add-field": {
+                "name": "vector",
+                "type": "knn_vector",
+                "indexed": True,
+                "stored": True
+            }
+        },
+        {
+            "add-field": {
+                "name": "text",
+                "type": "text_en",
+                "indexed": True,
+                "stored": True
+            }
         }
-    }
+    ]
 
     # Update the schema with the field type
-    response_field_type = requests.post(f"{solr_base_url}/schema", json=field_type_definition)
-    if response_field_type.status_code == 200:
-        print("Field type 'knn_vector' added successfully.")
-    else:
-        print(f"Error adding field type: {response_field_type.status_code} - {response_field_type.text}")
+    for field_type_definition in field_type_definitions:
+        response_field_type = requests.post(f"{solr_base_url}/schema", json=field_type_definition)
+        if response_field_type.status_code == 200:
+            print("Field type was added successfully.")
+        else:
+            print(f"Error adding field type: {response_field_type.status_code} - {response_field_type.text}")
 
     # Add the field to the schema
-    response_field = requests.post(f"{solr_base_url}/schema", json=field_definition)
-    if response_field.status_code == 200:
-        print("Field 'vector' added successfully.")
-    else:
-        print(f"Error adding field: {response_field_type.status_code} - {response_field_type.text}")
+    for field_definition in field_definitions:
+        response_field = requests.post(f"{solr_base_url}/schema", json=field_definition)
+        if response_field.status_code == 200:
+            print("Field was added successfully.")
+        else:
+            print(f"Error adding field: {response_field.status_code} - {response_field.text}")
+
+
 
     
 def create_core(SOLR_VERSION, core_name):
@@ -63,10 +78,6 @@ def create_core(SOLR_VERSION, core_name):
     subprocess.run([f"{solr_dir}/bin/solr", "create", "-c", core_name], check=True)
 
     change_schema(core_name)
-    
-    # <fieldType name="knn_vector" class="solr.DenseVectorField" vectorDimension="1024" similarityFunction="cosine" knnAlgorithm="hnsw" hnswMaxConnections="10" hnswBeamWidth="40"/>
-    # <field name="vector" type="knn_vector" indexed="true" stored="true"/>
-    
 
 
 def main(): 

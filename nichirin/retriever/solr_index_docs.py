@@ -35,10 +35,10 @@ class SolrIndex:
         with open(tok_file) as lines:
             for line in lines:
                 print(line.strip().split("\t"))
-                key, sen = line.strip().split("\t")
+                sen, url, key = line.strip().split("\t")
                 data = {
                     "text": sen,
-                    # "url": url,
+                    "url": url,
                     "vector": tensor[count].tolist(),
                     "id_md5": key,
                 }

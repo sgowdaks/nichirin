@@ -12,10 +12,10 @@ nltk.download('punkt')
 
 def parse_tsv(file):
     with open(file, 'r') as data:
-        # for line in f:
         for line in data:
+            key =  hashlib.sha256(str(line).encode()).hexdigest()
             values = line.split("\t")
-            yield values
+            yield values, key
 
 def split_paragraph(paragraph):
     # sentences = re.split(r'(?<=[.!?])\s+', paragraph)
@@ -23,19 +23,18 @@ def split_paragraph(paragraph):
     start = 0
     par = len(paragraph.split())
 
-    if par < 500:
+    if par < 750:
         result.append(paragraph)
         return result
 
     paragraph = paragraph.split()
 
     while start < par:
-        print(start, start + 500)
-        if start + 500 > par:
+        if start + 750 > par:
             result.append(" ".join(paragraph[start:par]))
             return result
-        result.append(" ".join(paragraph[start : start + 500]))  # 1st type
-        start += 250
+        result.append(" ".join(paragraph[start : start + 750]))  # 1st type
+        start += 700
 
     result.append(" ".join(paragraph[start - par : par]))
     return result
@@ -46,38 +45,29 @@ def join_sentences(sentences, n):
     joined_sentences = [' '.join(sentences[i : i + n]) for i in range(0, len(sentences), n)]
     return joined_sentences
 
-def add_sha_tocleanfiles(clean_files):
-    
-    for file in clean_files:    
-        df = pd.read_csv(file, sep='\t')
-        df['hash'] = df.apply(lambda x: hashlib.sha256(str(x.values).encode()).hexdigest(), axis=1)
-        df.to_csv(file, sep='\t', index=False)
-
 def split_data(files_path):
     path = Path(files_path)
     clean_files = [f for f in path.glob('*.tsv')]
-    
-    #add sha256 to the existing tsv files
-    add_sha_tocleanfiles(clean_files)
-    
+        
     all_the_files = [d for d in path.iterdir()]
     
     for clean_file in clean_files:
         if Path(str(clean_file) + ".split") not in all_the_files:
             with open(str(clean_file) + ".split", 'w') as output_file:
                 tsv_writer = csv.writer(output_file, delimiter='\t')
-                      
-                for row in parse_tsv(clean_file):
-                    row = list(row)
-                    key = row[-1]
+                                     
+                for row, key in parse_tsv(clean_file):
+                    try:
+                        title, sen, url = list(row)
                     
-                    for value in row[:-1]:
-                        
-                        result = split_paragraph(value)   
+                        url = url.replace("\n", "")
+                                                
+                        result = split_paragraph(sen)   
                         
                         for i, sen in enumerate(result):                                                      
-                            sen = sen.replace('\n', '')
-                            key = key.replace('\n', '')                        
-                            tsv_writer.writerow([key, sen])
+                            sen = title + ":" + sen.replace('\n', '')                       
+                            tsv_writer.writerow([sen, url, key])
+                    except:
+                        print(f"skipping the line {list(row)}")
                         
 
