@@ -9,7 +9,6 @@ import os
 
 from pathlib import Path
 
-
 class SolrIndex:
     # url = 'http://localhost:8983/solr/wiki/update'
     def __init__(self, data_path, core):
@@ -34,7 +33,7 @@ class SolrIndex:
 
         with open(tok_file) as lines:
             for line in lines:
-                print(line.strip().split("\t"))
+                # print(line.strip().split("\t"))
                 sen, url, key = line.strip().split("\t")
                 data = {
                     "text": sen,

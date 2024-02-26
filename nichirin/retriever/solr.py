@@ -43,7 +43,6 @@ class SolrRetriever:
             ) = self.load_single_model(self.retrieval_conf[model_name]["model_id"])
 
         # Return a dict of retrieval models and tokenizers      
-        print(retrieval_models)
         return retrieval_models
 
     def load_single_model(self, model_id: str):
@@ -77,49 +76,25 @@ class SolrRetriever:
             model=self.retrieval_models[f"{model_name}_model"],
             tokenizer=self.retrieval_models[f"{model_name}_tokenizer"],
         )
-        
-        print(embed.shape)
-        
+                
         vector = embed.tolist()[0]
         payload = {"query": "{!knn f=vector topK=5}" + str(vector)}
         response = requests.post(solr_url, json=payload).json()
-        
-        print(response)
-        
+                
         # Extract required field from Solr `response`
         retrieved_docs = response["response"]["docs"]
         all_docs = [
-            [res_["text"], res_["score"], core_name]
+            [res_["text"], res_["score"], res_["url"], core_name]
             for res_ in retrieved_docs
         ]
 
         # Truncate the retrieved `text` to character limit
         for i in range(len(all_docs)):
-            if all_docs[i][0] and len(all_docs[i][0]) > char_limit:
-                self.logger.info(
-                    f"Current retrieved text length from {core_name} = {len(all_docs[i][0])} chars. Truncating to {char_limit} chars."
-                )
+            if all_docs[i][0] and len(all_docs[i][0]) > char_limit:  
                 all_docs[i][0] = all_docs[i][0][:char_limit]
-
-        print(
-            f"Retrieved all docs from {solr_url} using {model_name} embeddings."
-        )
+                
+        print(f"Retrieved all docs from {solr_url} using {model_name} embeddings.")
         return all_docs
-
-    def get_sources(self, retrieved_docs):
-        # Retrieved docs schema: text, url, score, core_name
-        source_urls = [doc[1] for doc in retrieved_docs]
-        source_names = [doc[3] for doc in retrieved_docs]
-
-        for src_url, src_name in zip(source_urls, source_names):
-            if "wiki" in src_name:
-                updated_url = src_url.replace(" ", "_")
-                source_urls[source_urls.index(src_url)] = updated_url
-
-        # Remove duplicate sources
-        source_urls = list(set(source_urls))
-        self.logger.info(f"Top retrieval sources: {source_urls}")
-        return source_urls
 
     def get_response(self, query, core_name):
         # Combine the two retrieval results
@@ -141,16 +116,15 @@ class SolrRetriever:
             )
                 
             print(f"Retrieved all relevant docs using {model_name}.\n")
+        
 
-        print(f"Total {len(retrieved_docs)} docs retrieved from all solr cores.")
+        print(f"Total {len(retrieved_docs)} docs retrieved from solr cores.")
         # Retain only top 3 results by score and extract the text only
         reranked_retrieved_docs = sorted(
             retrieved_docs, key=lambda x: x[2], reverse=True
         )[: self.retrieval_top_k]
         
     
-        print(reranked_retrieved_docs)
-
         # Check total token size of all retrieved_docs
         context_size = sum(len(doc[0]) for doc in reranked_retrieved_docs)
         print(f"Re-ranked retrieved context contains {context_size} chars or  ~{int(context_size/4)} tokens.")
@@ -158,16 +132,13 @@ class SolrRetriever:
         # Check the top score of the retrieved docs
         top_ret_score = reranked_retrieved_docs[0][1]
         
-        print(type(top_ret_score), top_ret_score)
-
         if top_ret_score < self.retrieval_threshold:
             # Do not use any context from the retrieval
             retrieved_text = []
             print(f"Retrieved score is {top_ret_score}, which is less than {self.retrieval_threshold}. Dropping retrieved context.")
 
         else:
-            print(f"Re-ranked Retrieval docs with top score = {top_ret_score}: {reranked_retrieved_docs}")
-            retrieved_text = [res_[0] for res_ in reranked_retrieved_docs]
+            retrieved_text = [(res_[0], res_[2][0]) for res_ in reranked_retrieved_docs]
 
         return retrieved_text
 
@@ -178,6 +149,7 @@ def main():
 
     solr = SolrRetriever()
     response = solr.get_response(input_sen, core_name)
+    print(f"Total number of responses retrived: {len(response)}")
     print(f"Retrieval result:\n{response}") 
 
 
