@@ -33,6 +33,9 @@
 * `install-solr` to install solr
 * `create-core --core <core name>` to create solr core, 
 * `partition-data --path <path to the dataset>` to partition the data
+* `pipeline --path <path to the dataset>` generate embeddings of the partition data
+* `index-solr --data-path <path to dataset> --core <core to which the data needs to be sent>` index the data  
+* `query-solr --input_sen <input sen> --core_name <core name to query from>` query the data from solr
 
 Contributing and Feedback:
 We welcome contributions! If you’d like to enhance Nichirin or report issues, feel free to submit a pull request.
