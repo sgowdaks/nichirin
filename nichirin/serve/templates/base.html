@@ -63,6 +63,7 @@
       } else {
           const listElement = document.getElementById("list");
           listElement.innerHTML = '';
+          result = result['output']
           result.forEach((item) => {
               const li = document.createElement("li");
               li.textContent = item;
