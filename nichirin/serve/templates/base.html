@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="{{url_for('app.static', filename='css/bootstrap.min.css')}}" type="text/css">
+  <title>{% block title %} {% endblock %}</title>
+  {% block head %} {% endblock %}
+  <style type="text/css">
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    .pagefooter {
+      width: 100%;
+      height: 30px;
+      position: relative;
+      bottom: 0;
+    }
+
+    #wrap {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        margin: 0 auto -30px;
+        /* Bottom value must = footer height */
+      }
+
+  </style>
+
+</head>
+
+<body>
+  <div id="wrap">
+    <section class="container">
+      <h2> Retreival With Apache Solr</h2>
+      <div class="row">
+        <form id="form" class="col-12" action="./givencontext">
+          <div class="form-group">
+            <label for="context">Context</label>
+            <textarea name="Text1" cols="30" rows="6" id="context" name="context" class="form-control" placeholder="For database input (English), sentences must have at least 15 words."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg float-right">Submit</button>
+        </form>
+      </div>
+    </section>
+    <ul id="list"> </ul>
+  </div>
+
+  <footer class="pagefooter alert-secondary" style="text-align: center">
+    <p class="font-weight-light float-none" style="margin: 0; padding: 3px"><small>Web App created by Shivani Gowda
+        (2024- )</small></p>
+  </footer>
+
+  <script>
+
+    function update_view(result) {
+      if (result.length === 0) {
+          console.log("We couldn't find anything relevant.");
+      } else {
+          const listElement = document.getElementById("list");
+          listElement.innerHTML = '';
+          result.forEach((item) => {
+              const li = document.createElement("li");
+              li.textContent = item;
+              listElement.appendChild(li);
+          });
+      }
+    } 
+
+
+    window.onload = function () {
+      var sentence = null
+
+      $("#form").submit(function (event) {
+        console.log("event triggered")
+        event.preventDefault();
+        var $form = $(this)
+        url = $form.attr('action');
+        story = $('#context').val().trim()
+        data = JSON.stringify({
+          'story': story
+        });
+
+        var posting = $.ajax(url, {
+          data: data,
+          contentType: 'application/json',
+          type: 'POST'
+        });
+
+        posting.done(update_view)
+        posting.fail(function () {
+          alert("something went wrong! Check logs.");
+        });
+      });
+    }
+  </script>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="{{url_for('app.static', filename='js/jquery-3.5.1.min.js')}}"></script>
+  <script src="{{url_for('app.static', filename='js/bootstrap.bundle.min.js')}}"></script>
+</body>
+
+</html>
