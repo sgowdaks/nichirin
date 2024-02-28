@@ -29,6 +29,42 @@
         /* Bottom value must = footer height */
       }
 
+    .search-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+    }
+    
+    /* Style for the search box */
+    #search-box {
+        width: 300px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    /* Style for the search button */
+    button {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+  #outer {
+    width: 100%;
+    font-weight: bold;
+    font-size: 40px;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+
   </style>
 
 </head>
@@ -36,18 +72,15 @@
 <body>
   <div id="wrap">
     <section class="container">
-      <h2> Retreival With Apache Solr</h2>
-      <div class="row">
-        <form id="form" class="col-12" action="./givencontext">
-          <div class="form-group">
-            <label for="context">Context</label>
-            <textarea name="Text1" cols="30" rows="6" id="context" name="context" class="form-control" placeholder="For database input (English), sentences must have at least 15 words."></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary btn-lg float-right">Submit</button>
-        </form>
+      <div id="outer">
+        <div id="inner">Nichirin</div>
       </div>
+      <div class="search-container">
+        <input type="text" id="search-box" placeholder="Search ">
+        <button onclick="performSearch()">Search</button>
+      </div>
+      <div id="search-results"></div>
     </section>
-    <ul id="list"> </ul>
   </div>
 
   <footer class="pagefooter alert-secondary" style="text-align: center">
@@ -57,36 +90,63 @@
 
   <script>
 
+
+    function showDetails(details) {
+      searchResults = document.getElementById("search-results");
+      // searchResults.innerHTML = `<div class="result-details">${details}</div>`; 
+      searchResults.innerHTML = `
+      <div class="result-details">
+          <h3>new url</h3>
+          <p>Hi Thamme </p>
+      </div>`;
+    }
+
     function update_view(result) {
       if (result.length === 0) {
           console.log("We couldn't find anything relevant.");
-      } else {
-          const listElement = document.getElementById("list");
-          listElement.innerHTML = '';
-          result = result['output']
-          result.forEach((item) => {
-              const li = document.createElement("li");
-              li.textContent = item;
-              listElement.appendChild(li);
-          });
-      }
-    } 
+      } else {      
+          // Display brief summaries for each result
+          results = result['output']
+          searchResults = document.getElementById("search-results");
 
+          /* searchResults.innerHTML  */
 
-    window.onload = function () {
-      var sentence = null
+          for (const [index, result] of results.entries()){
 
-      $("#form").submit(function (event) {
-        console.log("event triggered")
-        event.preventDefault();
-        var $form = $(this)
-        url = $form.attr('action');
-        story = $('#context').val().trim()
+            totalLength = result[0].length;
+            firstPartLength = Math.floor(totalLength * ratio);
+            
+            firstPart = inputString.slice(0, firstPartLength);
+            secondPart = inputString.slice(firstPartLength);
+
+          }
+          
+          /* output  = results.map((result, index) => 
+
+            totalLength = result[0].length;
+            firstPartLength = Math.floor(totalLength * ratio);
+            
+            firstPart = inputString.slice(0, firstPartLength);
+            secondPart = inputString.slice(firstPartLength);
+
+            /*`<div class="result-summary" onclick="showDetails('${result[1]}')">
+              <h3>url</h3>
+              <p>${index}</p>
+              </div>`
+          ).join(""); */
+
+          }
+        }
+  
+      function performSearch() {
+        query = document.getElementById("search-box").value;
+        console.log("Performing search with query:", query);
+
         data = JSON.stringify({
-          'story': story
+          'story': query
         });
 
-        var posting = $.ajax(url, {
+        var posting = $.ajax("/givencontext", {
           data: data,
           contentType: 'application/json',
           type: 'POST'
@@ -96,7 +156,12 @@
         posting.fail(function () {
           alert("something went wrong! Check logs.");
         });
-      });
+    }
+    
+    window.onload = function () {
+
+      searchButton = document.getElementById("search-button");
+      searchButton.addEventListener("click", performSearch);
     }
   </script>
 
