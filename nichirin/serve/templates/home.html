@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<div class="container py-3" id="featured-3">
+    <div class="row col-12 m-1 border-bottom pb-3">
+      <h4 class="fs-2 p-2 pe-4 col-auto">Nichirin</h4>
+      <div class="col-6">
+      <input type="search" class="col-12 fs-6 p-2" placeholder="Search..." aria-label="Search" id="search-box">
+      </div>
+      <div class="col-2">
+        <button type="button" class="btn btn-primary btn-lg" onclick="performSearch()" id="search-button">Search</button>
+      </div>
+
+    </div>
+    <div id="search-results" class="container py-3">
+    </div>
+  </div>
+
+  <script>
+
+    function myFunction(index) {
+
+      const elementsWithDotsClass = document.getElementsByClassName("dots");
+      const dots = Array.from(elementsWithDotsClass).find(el => el.id === index);
+
+      const elementsWithmoreClass = document.getElementsByClassName("more");
+      const moreText = Array.from(elementsWithmoreClass).find(el => el.id === index);
+
+      const elementsWithBtnClass = document.getElementsByClassName("myBtn");
+      const btnText = Array.from(elementsWithBtnClass).find(el => el.id === index);
+
+      if (dots.style.display === "none") {
+        dots.style.display = "inline";
+        btnText.innerHTML = "Read more";
+        moreText.style.display = "none";
+      } else {
+        dots.style.display = "none";
+        btnText.innerHTML = "Read less";
+        moreText.style.display = "inline";
+      }
+    }
+
+    function update_view(result) {
+      if (result.length === 0) {
+        console.log("We couldn't find anything relevant.");
+      } else {
+        // Display brief summaries for each result
+        results = result['output']
+        searchResults = document.getElementById("search-results");
+
+        let myList = [];
+
+        for (const [index, result] of results.entries()) {
+
+          let sentenceText = result[0];
+          let url = result[1]
+
+          let [title, sentence] = sentenceText.split(":", 2)
+          totalLength = sentence.length;
+
+          title = title.replace(/^"|"$|"(?=\s)|(?<=\s)"/g, '')
+
+          firstPartLength = Math.floor(totalLength * 0.2);
+
+          firstPart = sentence.slice(0, firstPartLength);
+          secondPart = sentence.slice(firstPartLength);
+
+          myList.push(`<div class="border-bottom">
+              <a href="${url}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover fs-5">${title} </a>
+              <p id="each">${firstPart}
+              <span class="dots" id="${index}">...</span>
+              <span class="more" id="${index}" style="display: none;">${secondPart}</span>
+              <button onclick='myFunction("${index}")' class="myBtn btn btn-outline-primary btn-sm" id="${index}">More</button>
+            </p>
+            </div>`
+          );
+        }
+        searchResults = document.getElementById("search-results");
+        searchResults.innerHTML = myList.join("")
+      }
+
+      /* document.getElementById("loadingButton").style.display = "none"; */
+    }
+
+    function performSearch() {
+      /* document.getElementById("loadingButton").style.display = "block"; */
+      query = document.getElementById("search-box").value;
+      console.log("Performing search with query:", query);
+      // add  query to url params
+      // Suppose the current URL is http://example.com/page?existingParam=42
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams(url.search);
+
+      // Update an existing parameter
+      params.set("q", query);
+
+      // Update the URL without triggering a page reload
+      url.search = params.toString();
+      window.history.replaceState({}, "", url.href);
+
+      data = JSON.stringify({
+        'story': query
+      });
+
+      var posting = $.ajax("/givencontext", {
+        data: data,
+        contentType: 'application/json',
+        type: 'POST'
+      });
+
+      posting.done(update_view)
+      posting.fail(function () {
+        alert("something went wrong! Check logs.");
+      });
+    }
+
+    window.onload = function () {
+
+      searchButton = document.getElementById("search-button");
+      searchButton.addEventListener("click", performSearch);
+      // TODO restore q param to search box
+      const url = new URL(window.location.href);
+
+      // Retrieve the value of the 'q' parameter (replace 'q' with your desired parameter name)
+      const queryValue = url.searchParams.get('q');
+      if (queryValue) {
+        document.getElementById('search-box').value = queryValue
+      }
+    }
+  </script>
+{% endblock %}

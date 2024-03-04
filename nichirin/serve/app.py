@@ -13,7 +13,7 @@ solr = SolrRetriever()
 
 @bp.route("/", methods=['GET'])
 def home():
-    return render_template("base.html")
+    return render_template("home.html")
 
 @bp.route('/givencontext', methods=['POST'])
 def data_handeler_route():
