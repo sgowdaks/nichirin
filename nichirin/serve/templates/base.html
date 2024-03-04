@@ -8,125 +8,54 @@
   <title>{% block title %} {% endblock %}</title>
   {% block head %} {% endblock %}
   <style type="text/css">
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-    }
-
-    .pagefooter {
-      width: 100%;
-      height: 30px;
-      position: relative;
-      bottom: 0;
-    }
-
-    #wrap {
-        min-height: 100%;
-        height: auto !important;
-        height: 100%;
-        margin: 0 auto -30px;
-        /* Bottom value must = footer height */
-      }
-
-    .search-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 50px;
-        margin-bottom: 20px;
-    }
-    
-    /* Style for the search box */
-    #search-box {
-        width: 300px;
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    
-    /* Style for the search button */
-    button {
-        background-color: #4285f4;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        margin-left: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    #each {
-      margin-bottom: 20px
-    }
-
-    #outer {
-      width: 100%;
-      font-weight: bold;
-      font-size: 40px;
-      display: flex;
-      justify-content: center; /* Center horizontally */
-      align-items: center; /* Center vertically */
-    }
-
-    .myBtn{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 6px 14px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-        border-radius: 6px;
-        border: none;
-
-        background: #6E6D70;
-        box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.1), inset 0px 0.5px 0.5px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.12);
-        color: #DFDEDF;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-      }
-    
-    .myBtn:hover {
-      box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
-    }
-
-
   </style>
 
 </head>
 
 <body>
-  <div id="wrap">
-    <section class="container">
-      <div id="outer">
-        <div id="inner">Nichirin</div>
-      </div>
-      <div class="search-container">
-        <input type="text" id="search-box" placeholder="Search ">
-        <button onclick="performSearch()" id="search-button">Search</button>
-      </div>
-      <div id="search-results"></div>
-    </section>
-  </div>
+  <header class="p-3 text-bg-dark">
+    <div class="container">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+          <h2>Nichirin</h2>
+          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg> 
+        </a>
 
-  <footer class="pagefooter alert-secondary" style="text-align: center">
-    <p class="font-weight-light float-none" style="margin: 0; padding: 3px"><small>Web App created by Shivani Gowda
-        (2024- )</small></p>
-  </footer>
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
+          <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
+          <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>  -->
+          <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
+          <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+        </ul>
+
+        <div class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> 
+          <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search" id="search-box">
+        </div> 
+
+        <div class="text-end">
+          <button type="button" class="btn btn-outline-light me-2" onclick="performSearch()" id="search-button">Search</button>
+          <!-- <button type="button" class="btn btn-warning">Sign-up</button>  -->
+        </div>
+
+        <div class="d-flex gap-2 justify-content-center py-5">
+          <button id="loadingButton" class="btn btn-primary" type="button" disabled style="display: none;">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Loading...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header> 
+
+  <div class="container px-4 py-5" id="featured-3">
+    <div id="search-results" class="row g-4 py-5">
+    </div>
+  </div>
+    
 
   <script>
 
-
-    function showDetails(details) {
-      searchResults = document.getElementById("search-results");
-      // searchResults.innerHTML = `<div class="result-details">${details}</div>`; 
-      searchResults.innerHTML = `
-      <div class="result-details">
-          <h3>new url</h3>
-          <p>Hi Thamme </p>
-      </div>`;
-    }
 
     function myFunction(index) {
 
@@ -138,10 +67,6 @@
 
       const elementsWithBtnClass = document.getElementsByClassName("myBtn");
       const btnText = Array.from(elementsWithBtnClass).find(el => el.id === index);
-
-      console.log(dots)
-      console.log(moreText)
-      console.log(btnText)
 
       if (dots.style.display === "none") {
         dots.style.display = "inline";
@@ -168,28 +93,52 @@
 
           for (const [index, result] of results.entries()){
 
-            totalLength = result[0].length;
+            let sentenceText = result[0];
+            let url = result[1]
+
+            let [title, sentence] = sentenceText.split(":", 2)
+            totalLength = sentence.length;
+
+            title = title.replace(/^"|"$|"(?=\s)|(?<=\s)"/g, '')
+
             firstPartLength = Math.floor(totalLength * 0.2);
             
-            firstPart = result[0].slice(0, firstPartLength);
-            secondPart = result[0].slice(firstPartLength);
+            firstPart = sentence.slice(0, firstPartLength);
+            secondPart = sentence.slice(firstPartLength);
 
-            myList.push(`<div id="each"><p>${firstPart}
+            myList.push(`<div class="feature">
+              <a href="${url}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"> <h4 class="fs-2 text-body-emphasis">${title}</h4> </a>
+              <p id="each">${firstPart}
               <span class="dots" id="${index}">...</span>
-              <span class="more" id="${index}" style="display: none;">${secondPart}</span></p>
-              <button onclick='myFunction("${index}")' class="myBtn" id="${index}">More</button> </div>`
+              <span class="more" id="${index}" style="display: none;">${secondPart}</span>
+              <button onclick='myFunction("${index}")' class="myBtn btn btn-light" id="${index}">More</button>
+            </p>
+            </div>`
             );  
-
           }
 
           searchResults = document.getElementById("search-results");
           searchResults.innerHTML = myList.join("")
         }
+
+        document.getElementById("loadingButton").style.display = "none";
       }
   
       function performSearch() {
+        document.getElementById("loadingButton").style.display = "block";
         query = document.getElementById("search-box").value;
         console.log("Performing search with query:", query);
+        // add  query to url params
+        // Suppose the current URL is http://example.com/page?existingParam=42
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        // Update an existing parameter
+        params.set("q", query);
+
+        // Update the URL without triggering a page reload
+        url.search = params.toString();
+        window.history.replaceState({}, "", url.href);
 
         data = JSON.stringify({
           'story': query
@@ -211,6 +160,15 @@
 
       searchButton = document.getElementById("search-button");
       searchButton.addEventListener("click", performSearch);
+      // TODO restore q param to search box
+      const url = new URL(window.location.href);
+
+      // Retrieve the value of the 'q' parameter (replace 'q' with your desired parameter name)
+      const queryValue = url.searchParams.get('q');
+      if (queryValue) {
+         document.getElementById('search-box').value = queryValue
+      }
+
     }
   </script>
 
