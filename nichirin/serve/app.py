@@ -9,6 +9,8 @@ app = Flask(__name__)
 # Define a blueprint (optional)
 bp = Blueprint('app', __name__, static_folder='static', template_folder='templates')
 
+solr = SolrRetriever()
+
 @bp.route("/", methods=['GET'])
 def home():
     return render_template("base.html")
@@ -32,16 +34,15 @@ def data_handeler_route():
         return result, 400
     texts = [story][0]
     try: 
-        solr = SolrRetriever()
-        response = solr.get_response(texts, "wiki")
-        #need to add core_name
+        response = solr.get_response(texts, "wiki")       
+        #need to add core_name      
         result['output'] = response
     except Exception as e:
         log.error(e, exc_info=True)
         errors.append('Something went wrong with the given input. We couldnt process it.')
         result['errors'] = errors
         return jsonify(result), 500
-
+    
     result['time'] = f'{time.time() - st:.3f}s'
     return jsonify(result)
 

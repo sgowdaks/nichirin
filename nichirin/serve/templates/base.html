@@ -8,54 +8,71 @@
   <title>{% block title %} {% endblock %}</title>
   {% block head %} {% endblock %}
   <style type="text/css">
-  </style>
 
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+
+    .pagefooter{
+      width: 100%;
+      height: 5em;
+      position: relative;
+      bottom: 0;
+    }
+
+    #wrap {
+      min-height: 100%;
+      height: auto !important;
+      height: 100%;
+      margin: 0 auto -5em;
+      /* Bottom value must = footer height */
+    }
+  </style>
 </head>
 
 <body>
-  <header class="p-3 text-bg-dark">
-    <div class="container">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <h2>Nichirin</h2>
-          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg> 
-        </a>
-
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
-          <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
-          <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>  -->
-          <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-          <li><a href="#" class="nav-link px-2 text-white">About</a></li>
-        </ul>
-
-        <div class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> 
-          <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search" id="search-box">
-        </div> 
-
-        <div class="text-end">
-          <button type="button" class="btn btn-outline-light me-2" onclick="performSearch()" id="search-button">Search</button>
-          <!-- <button type="button" class="btn btn-warning">Sign-up</button>  -->
-        </div>
-
-        <div class="d-flex gap-2 justify-content-center py-5">
-          <button id="loadingButton" class="btn btn-primary" type="button" disabled style="display: none;">
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span role="status">Loading...</span>
-          </button>
-        </div>
+  <div id="wrap">
+  <div class="container py-3" id="featured-3">
+    <div class="row col-12 m-1 border-bottom pb-3">
+      <h4 class="fs-2 p-2 pe-4 col-auto">Nichirin</h4>
+      <div class="col-6">
+      <input type="search" class="col-12 fs-6 p-2" placeholder="Search..." aria-label="Search" id="search-box">
       </div>
-    </div>
-  </header> 
+      <div class="col-2">
+        <button type="button" class="btn btn-primary btn-lg" onclick="performSearch()" id="search-button">Search</button>
+      </div>
+      <!-- <div class="clearfix">
+        <div class="spinner-border float-end" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div> -->
 
-  <div class="container px-4 py-5" id="featured-3">
-    <div id="search-results" class="row g-4 py-5">
+    </div>
+    <div id="search-results" class="container py-3">
     </div>
   </div>
-    
+  </div>
+
+  <div class="container pagefooter">
+    <footer class="d-flex flex-wrap justify-content-between align-items-center border-top">
+      <p class="col-md-4 mb-0 text-body-secondary">&copy; Shivani Gowda</p>
+  
+      <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+      </a>
+  
+      <ul class="nav col-md-4 justify-content-end">
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
+      </ul>
+    </footer>
+  </div>
 
   <script>
-
 
     function myFunction(index) {
 
@@ -70,92 +87,89 @@
 
       if (dots.style.display === "none") {
         dots.style.display = "inline";
-        btnText.innerHTML = "Read more"; 
+        btnText.innerHTML = "Read more";
         moreText.style.display = "none";
       } else {
         dots.style.display = "none";
-        btnText.innerHTML = "Read less"; 
+        btnText.innerHTML = "Read less";
         moreText.style.display = "inline";
       }
     }
 
     function update_view(result) {
       if (result.length === 0) {
-          console.log("We couldn't find anything relevant.");
-      } else {      
-          // Display brief summaries for each result
-          results = result['output']
-          searchResults = document.getElementById("search-results");
+        console.log("We couldn't find anything relevant.");
+      } else {
+        // Display brief summaries for each result
+        results = result['output']
+        searchResults = document.getElementById("search-results");
 
-          /* searchResults.innerHTML  */
+        let myList = [];
 
-          let myList = [];
+        for (const [index, result] of results.entries()) {
 
-          for (const [index, result] of results.entries()){
+          let sentenceText = result[0];
+          let url = result[1]
 
-            let sentenceText = result[0];
-            let url = result[1]
+          let [title, sentence] = sentenceText.split(":", 2)
+          totalLength = sentence.length;
 
-            let [title, sentence] = sentenceText.split(":", 2)
-            totalLength = sentence.length;
+          title = title.replace(/^"|"$|"(?=\s)|(?<=\s)"/g, '')
 
-            title = title.replace(/^"|"$|"(?=\s)|(?<=\s)"/g, '')
+          firstPartLength = Math.floor(totalLength * 0.2);
 
-            firstPartLength = Math.floor(totalLength * 0.2);
-            
-            firstPart = sentence.slice(0, firstPartLength);
-            secondPart = sentence.slice(firstPartLength);
+          firstPart = sentence.slice(0, firstPartLength);
+          secondPart = sentence.slice(firstPartLength);
 
-            myList.push(`<div class="feature">
-              <a href="${url}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"> <h4 class="fs-2 text-body-emphasis">${title}</h4> </a>
+          myList.push(`<div class="border-bottom">
+              <a href="${url}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover fs-5">${title} </a>
               <p id="each">${firstPart}
               <span class="dots" id="${index}">...</span>
               <span class="more" id="${index}" style="display: none;">${secondPart}</span>
-              <button onclick='myFunction("${index}")' class="myBtn btn btn-light" id="${index}">More</button>
+              <button onclick='myFunction("${index}")' class="myBtn btn btn-outline-primary btn-sm" id="${index}">More</button>
             </p>
             </div>`
-            );  
-          }
-
-          searchResults = document.getElementById("search-results");
-          searchResults.innerHTML = myList.join("")
+          );
         }
-
-        document.getElementById("loadingButton").style.display = "none";
+        searchResults = document.getElementById("search-results");
+        searchResults.innerHTML = myList.join("")
       }
-  
-      function performSearch() {
-        document.getElementById("loadingButton").style.display = "block";
-        query = document.getElementById("search-box").value;
-        console.log("Performing search with query:", query);
-        // add  query to url params
-        // Suppose the current URL is http://example.com/page?existingParam=42
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(url.search);
 
-        // Update an existing parameter
-        params.set("q", query);
-
-        // Update the URL without triggering a page reload
-        url.search = params.toString();
-        window.history.replaceState({}, "", url.href);
-
-        data = JSON.stringify({
-          'story': query
-        });
-
-        var posting = $.ajax("/givencontext", {
-          data: data,
-          contentType: 'application/json',
-          type: 'POST'
-        });
-
-        posting.done(update_view)
-        posting.fail(function () {
-          alert("something went wrong! Check logs.");
-        });
+      /* document.getElementById("loadingButton").style.display = "none"; */
     }
-    
+
+    function performSearch() {
+      /* document.getElementById("loadingButton").style.display = "block"; */
+      query = document.getElementById("search-box").value;
+      console.log("Performing search with query:", query);
+      // add  query to url params
+      // Suppose the current URL is http://example.com/page?existingParam=42
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams(url.search);
+
+      // Update an existing parameter
+      params.set("q", query);
+
+      // Update the URL without triggering a page reload
+      url.search = params.toString();
+      window.history.replaceState({}, "", url.href);
+
+      data = JSON.stringify({
+        'story': query
+      });
+
+      var posting = $.ajax("/givencontext", {
+        data: data,
+        contentType: 'application/json',
+        type: 'POST'
+      });
+
+      posting.done(update_view)
+      posting.fail(function () {
+        alert("something went wrong! Check logs.");
+      });
+    }
+
     window.onload = function () {
 
       searchButton = document.getElementById("search-button");
@@ -166,14 +180,11 @@
       // Retrieve the value of the 'q' parameter (replace 'q' with your desired parameter name)
       const queryValue = url.searchParams.get('q');
       if (queryValue) {
-         document.getElementById('search-box').value = queryValue
+        document.getElementById('search-box').value = queryValue
       }
-
     }
   </script>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="{{url_for('app.static', filename='js/jquery-3.5.1.min.js')}}"></script>
   <script src="{{url_for('app.static', filename='js/bootstrap.bundle.min.js')}}"></script>
 </body>
