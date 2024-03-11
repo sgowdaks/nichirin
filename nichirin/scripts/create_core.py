@@ -68,10 +68,7 @@ def change_schema(core_name):
             print("Field was added successfully.")
         else:
             print(f"Error adding field: {response_field.status_code} - {response_field.text}")
-
-
-
-    
+ 
 def create_core(SOLR_VERSION, core_name):
         
     solr_dir = f"solr-{SOLR_VERSION}"
