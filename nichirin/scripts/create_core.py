@@ -18,39 +18,43 @@ def check_solr_status(SOLR_VERSION):
     if not check:
         subprocess.run([f'solr-{SOLR_VERSION}/bin/solr', 'start'])
         
-def change_schema(core_name):
+def change_schema(core_name, solr_dir):
     # Define the Solr base URL
     solr_base_url = f"http://localhost:8983/solr/{core_name}"
+    
+    enconf_path = solr_dir + f"/server/solr/{core_name}/conf/enumsConfig.xml"
+    
+    xml_content = """<?xml version="1.0" ?>
+<enumsConfig>
+    <enum name="status">
+        <value>UNFETCHED</value>
+        <value>FETCHING</value>
+        <value>FETCHED</value>
+        <value>IGNORED</value>
+        <value>ERROR</value>
+    </enum>
+</enumsConfig>"""
+                
+    with open(enconf_path, "w") as file:
+        file.write(xml_content)
 
 
     # Define the field type definition
-    field_type_definitions = [{
-        "add-field-type": {
-            "name": "knn_vector",
-            "class": "solr.DenseVectorField",
-            "vectorDimension": 1024,
-            "similarityFunction": "cosine"
-        }
-    }]
-
+    field_type_definitions = [{"add-field-type": {"name": "knn_vector","class": "solr.DenseVectorField", "vectorDimension": 1024, "similarityFunction": "cosine"}},
+                              {"add-field-type": {"name": "status","class": "solr.EnumField", "enumsConfig": "enumsConfig.xml", "enumName": "status"}},
+                              {"add-field-type": {"name": "date","class": "solr.TrieDateField", "docValues": True, "precisionStep": "0"}},
+                              {"add-field-type": {"name": "int","class": "solr.TrieIntField", "docValues": True, "precisionStep": "0"}}
+    ]
+    
     # Define the field definition
     field_definitions = [
-        {
-            "add-field": {
-                "name": "vector",
-                "type": "knn_vector",
-                "indexed": True,
-                "stored": True
-            }
-        },
-        {
-            "add-field": {
-                "name": "text",
-                "type": "text_en",
-                "indexed": True,
-                "stored": True
-            }
-        }
+        {"add-field": {"name": "vector", "type": "knn_vector", "indexed": True, "stored": True}},
+        {"add-field": {"name": "text", "type": "text_en", "indexed": True, "stored": True}},
+        {"add-field": {"name": "status", "type": "status", "indexed": True, "stored": True, "default":"UNFETCHED", "multiValued": False}},
+        {"add-field": {"name": "outlinks", "type": "string", "indexed": True, "stored": True}},
+        {"add-field": {"name": "fetch_depth", "type": "int", "indexed": True, "stored": True, "default":"0"}},
+        {"add-field": {"name": "last_crawled", "type": "boolean", "indexed": True, "stored": True}},
+        {"add-field": {"name": "last_updated_at", "type": "date", "indexed": True, "stored": True, "default":"NOW"}}        
     ]
 
     # Update the schema with the field type
@@ -74,7 +78,7 @@ def create_core(SOLR_VERSION, core_name):
     solr_dir = f"solr-{SOLR_VERSION}"
     subprocess.run([f"{solr_dir}/bin/solr", "create", "-c", core_name], check=True)
 
-    change_schema(core_name)
+    change_schema(core_name, solr_dir)
 
 
 def main(): 

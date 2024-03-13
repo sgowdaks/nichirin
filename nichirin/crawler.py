@@ -11,6 +11,7 @@ response = requests.get(solr_core_url, params=solr_query)
 
 data = response.json()
 urls = [doc["url"][0] for doc in data["response"]["docs"]]
+
 #converts data to RDD by connceting to spark sessions
 rdd = spark.sparkContext.parallelize(urls)
 
