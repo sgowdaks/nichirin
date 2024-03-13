@@ -1,10 +1,6 @@
 import torch
-import pandas as pd
-import numpy as np
-import argparse
-import csv
+import json
 
-from tqdm.auto import tqdm
 from pathlib import Path
 from transformers import AutoTokenizer, AutoModel
 
@@ -33,25 +29,23 @@ class GenerateEmbeddings:
         print("Loading data from ", inp_file)
 
         path = Path(inp_file)
-        tsv_files = [f for f in path.glob('*.split')]
+        json_files = [f for f in path.glob('*.split')]
         all_the_files = [d for d in path.iterdir()]
 
         embeddings = []
 
-        for tsv_file in tsv_files:
+        for tsv_file in json_files:
             if Path(str(tsv_file) + ".pt") not in all_the_files:
                 # with open(str(tsv_file) + ".tok", 'w') as output_file:
-                    with open(tsv_file, encoding='utf-8', errors='ignore') as lines:
-
-                        dataset = [x for x in lines if x]  # drop empty lines
-                        print(f"Num lines {len(dataset)}")
-                        
+                    with open(tsv_file, encoding='utf-8', errors='ignore') as dataset:
+                    
                         current_group = []
                         embeddings = []
                         
-                        for i, line in enumerate(dataset):   
-                            sen, url, hash = line.split("\t")    
-                            sen = sen.replace("\n", "")             
+                        for i, line in enumerate(dataset): 
+                            line = json.loads(line)  
+                            line['text'] =  line['text'].replace("\n", "")   
+                            sen = line['text']          
                             if i % 100 == 0 and current_group:
                                 embedding = self.get_embeddings(current_group)
                                 embeddings.append(embedding.detach().cpu())

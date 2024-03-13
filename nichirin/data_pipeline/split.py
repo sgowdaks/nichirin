@@ -1,21 +1,18 @@
 import csv
-import re
-import argparse
 import hashlib
 import nltk
-import sys
-import pandas as pd
+import json
 
 from pathlib import Path
 
 nltk.download('punkt')
 
-def parse_tsv(file):
+def parse_jsonl(file):
     with open(file, 'r') as data:
         for line in data:
+            line = json.loads(line)
             key =  hashlib.sha256(str(line).encode()).hexdigest()
-            values = line.split("\t")
-            yield values, key
+            yield line, key
 
 def split_paragraph(paragraph):
     # sentences = re.split(r'(?<=[.!?])\s+', paragraph)
@@ -47,26 +44,25 @@ def join_sentences(sentences, n):
 
 def split_data(files_path):
     path = Path(files_path)
-    clean_files = [f for f in path.glob('*.tsv')]
-        
+    clean_files = [f for f in path.glob('*.jsonl')]       
     all_the_files = [d for d in path.iterdir()]
     
     for clean_file in clean_files:
         if Path(str(clean_file) + ".split") not in all_the_files:
             with open(str(clean_file) + ".split", 'w') as output_file:
-                tsv_writer = csv.writer(output_file, delimiter='\t')
                                      
-                for row, key in parse_tsv(clean_file):
-                    try:
-                        title, sen, url = list(row)
-                    
-                        url = url.replace("\n", "")
-                                                
-                        result = split_paragraph(sen)   
-                        
+                for row, key in parse_jsonl(clean_file):
+                    try:   
+                        row.get("url") and row.update({"url": row["url"].replace("\n", "")})  
+                        row['key'] = key
+                                       
+                        result = split_paragraph(row["text"]) 
+                                    
                         for i, sen in enumerate(result):                                                      
-                            sen = title + ":" + sen.replace('\n', '')                       
-                            tsv_writer.writerow([sen, url, key])
+                            sen = row['title'] + ":" + sen.replace('\n', '')
+                            row['text'] = sen
+                            output_file.write(json.dumps(row, ensure_ascii=False) + "\n")                  
+  
                     except:
                         print(f"skipping the line {list(row)}")
                         

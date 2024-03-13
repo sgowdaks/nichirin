@@ -31,7 +31,7 @@ def partition(file_path):
             i = 0
             chunk = f.read(1000000000)  # read 1 GB at a time
             while chunk:
-                with open(os.path.join(output_dir, f"part-{i:02}.tsv"), 'wb') as f_part:
+                with open(os.path.join(output_dir, f"part-{i:02}.jsonl"), 'wb') as f_part:
                     f_part.write(chunk)
                 i += 1
                 chunk = f.read(1000000000)

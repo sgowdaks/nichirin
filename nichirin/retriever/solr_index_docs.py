@@ -29,23 +29,25 @@ class SolrIndex:
         count = 0
         tok_file = [f for f in self.wikidata_path.glob("*.split")][0]
         ten_file = [f for f in self.wikidata_path.glob("*.pt")][0]
-        tensor = torch.load(ten_file)
-
+        tensor_exists = False
+        
+        if len(ten_file) > 0:
+            tensor = torch.load(ten_file)
+            tensor_exists = True
+        
         with open(tok_file) as lines:
             for line in lines:
-                # print(line.strip().split("\t"))
-                sen, url, key = line.strip().split("\t")
-                data = {
-                    "text": sen,
-                    "url": url,
-                    "vector": tensor[count].tolist(),
-                    "id_md5": key,
-                }
+                data = json.load(line)
                 count += 1
+                
+                if tensor_exists:
+                    data["vector"] = tensor[count].tolist()
+                    
                 json_string = data
                 yield json_string
-                # time.sleep(0.1)
+                            
         print(f"Skips={skips}, Good={count}")
+                   
 
     def make_batches(self, stream, batch_size):
         print(f"making batches of batch={batch_size}")

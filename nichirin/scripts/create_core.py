@@ -25,15 +25,15 @@ def change_schema(core_name, solr_dir):
     enconf_path = solr_dir + f"/server/solr/{core_name}/conf/enumsConfig.xml"
     
     xml_content = """<?xml version="1.0" ?>
-<enumsConfig>
-    <enum name="status">
-        <value>UNFETCHED</value>
-        <value>FETCHING</value>
-        <value>FETCHED</value>
-        <value>IGNORED</value>
-        <value>ERROR</value>
-    </enum>
-</enumsConfig>"""
+            <enumsConfig>
+                <enum name="status">
+                    <value>UNFETCHED</value>
+                    <value>FETCHING</value>
+                    <value>FETCHED</value>
+                    <value>IGNORED</value>
+                    <value>ERROR</value>
+                </enum>
+            </enumsConfig>"""
                 
     with open(enconf_path, "w") as file:
         file.write(xml_content)
@@ -54,7 +54,8 @@ def change_schema(core_name, solr_dir):
         {"add-field": {"name": "outlinks", "type": "string", "indexed": True, "stored": True}},
         {"add-field": {"name": "fetch_depth", "type": "int", "indexed": True, "stored": True, "default":"0"}},
         {"add-field": {"name": "last_crawled", "type": "boolean", "indexed": True, "stored": True}},
-        {"add-field": {"name": "last_updated_at", "type": "date", "indexed": True, "stored": True, "default":"NOW"}}        
+        {"add-field": {"name": "last_updated_at", "type": "date", "indexed": True, "stored": True, "default":"NOW"}},   
+        {"add-field": {"name": "url", "type": "string", "indexed": True, "stored": True, "multiValued":False,"default":"NOW"}}  
     ]
 
     # Update the schema with the field type
