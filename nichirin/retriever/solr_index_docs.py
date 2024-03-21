@@ -9,6 +9,7 @@ import os
 
 from pathlib import Path
 
+
 class SolrIndex:
     # url = 'http://localhost:8983/solr/wiki/update'
     def __init__(self, data_path, core):
@@ -30,24 +31,23 @@ class SolrIndex:
         tok_file = [f for f in self.wikidata_path.glob("*.split")][0]
         ten_file = [f for f in self.wikidata_path.glob("*.pt")][0]
         tensor_exists = False
-        
+
         if len(ten_file) > 0:
             tensor = torch.load(ten_file)
             tensor_exists = True
-        
+
         with open(tok_file) as lines:
             for line in lines:
                 data = json.load(line)
                 count += 1
-                
+
                 if tensor_exists:
                     data["vector"] = tensor[count].tolist()
-                    
+
                 json_string = data
                 yield json_string
-                            
+
         print(f"Skips={skips}, Good={count}")
-                   
 
     def make_batches(self, stream, batch_size):
         print(f"making batches of batch={batch_size}")
@@ -62,9 +62,9 @@ class SolrIndex:
 
     def index_docs(self, solr_url, stream):
         print(f"indexing docs to {solr_url}")
-        
+
         update_url = solr_url.rstrip("/") + "/update"
-        
+
         if isinstance(stream, list):
             data = dict(add=stream)
             time.sleep(0.5)
@@ -74,7 +74,7 @@ class SolrIndex:
             if response.status_code != 200:
                 raise Exception(response.text)
             now_t = time.time()
-        else:            
+        else:
             batches = self.make_batches(stream, batch_size=self.batch_size)
             count = 0
             last_t = time.time()
@@ -102,13 +102,14 @@ class SolrIndex:
         )
         print(response.status_code, response.text)
         assert response.status_code == 200
-        
-def main():  
+
+
+def main():
     args = parse_args()
     si = SolrIndex(args["data_path"], args["core"])
     si.read_()
-    
-    
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
