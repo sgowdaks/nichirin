@@ -51,7 +51,7 @@ def change_schema(core_name, solr_dir):
         {"add-field": {"name": "vector", "type": "knn_vector", "indexed": True, "stored": True}},
         {"add-field": {"name": "text", "type": "text_en", "indexed": True, "stored": True}},
         {"add-field": {"name": "status", "type": "status", "indexed": True, "stored": True, "default":"UNFETCHED", "multiValued": False}},
-        {"add-field": {"name": "outlinks", "type": "string", "indexed": True, "stored": True}},
+        {"add-field": {"name": "outlinks", "type": "string", "indexed": False, "stored": True, "multiValued": True}},
         {"add-field": {"name": "fetch_depth", "type": "int", "indexed": True, "stored": True, "default":"0"}},
         {"add-field": {"name": "last_crawled", "type": "boolean", "indexed": True, "stored": True}},
         {"add-field": {"name": "last_updated_at", "type": "date", "indexed": True, "stored": True, "default":"NOW"}},   

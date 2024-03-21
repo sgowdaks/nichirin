@@ -15,7 +15,7 @@ class SolrIndex:
         self.batch_size = 1000
         self.headers = {"Content-Type": "application/json"}
         self.data_path = data_path
-        self.wikidata_path = Path(self.data_path)
+        self.wikidata_path = Path(self.data_path) if self.data_path else None
         self.solr_url = "http://localhost:8983/solr/" + core
 
     def read_(self):
@@ -62,13 +62,11 @@ class SolrIndex:
 
     def index_docs(self, solr_url, stream):
         print(f"indexing docs to {solr_url}")
-        batches = self.make_batches(stream, batch_size=self.batch_size)
-        count = 0
+        
         update_url = solr_url.rstrip("/") + "/update"
-        last_t = time.time()
-        for batch in batches:
-            count += len(batch)
-            data = dict(add=batch)
+        
+        if isinstance(stream, list):
+            data = dict(add=stream)
             time.sleep(0.5)
             response = requests.post(
                 update_url, headers=self.headers, data=json.dumps(data)
@@ -76,10 +74,24 @@ class SolrIndex:
             if response.status_code != 200:
                 raise Exception(response.text)
             now_t = time.time()
-            if now_t - last_t > 2:
-                print(f"docs= {count:,}")
-                last_t = now_t
-        print(f"Total docs= {count:,}")
+        else:            
+            batches = self.make_batches(stream, batch_size=self.batch_size)
+            count = 0
+            last_t = time.time()
+            for batch in batches:
+                count += len(batch)
+                data = dict(add=batch)
+                time.sleep(0.5)
+                response = requests.post(
+                    update_url, headers=self.headers, data=json.dumps(data)
+                )
+                if response.status_code != 200:
+                    raise Exception(response.text)
+                now_t = time.time()
+                if now_t - last_t > 2:
+                    print(f"docs= {count:,}")
+                    last_t = now_t
+            print(f"Total docs= {count:,}")
 
     def commit(self, solr_url):
         print("Committing docs ")
@@ -91,7 +103,6 @@ class SolrIndex:
         print(response.status_code, response.text)
         assert response.status_code == 200
         
-
 def main():  
     args = parse_args()
     si = SolrIndex(args["data_path"], args["core"])
