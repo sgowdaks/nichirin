@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession, Row
 from .retriever.solr_index_docs import SolrIndex
 from bs4 import BeautifulSoup
-from utils.data_utils import validate_url
+from .utils.data_utils import validate_url
 
 import requests
 import json
@@ -39,7 +39,8 @@ def get_html_content(input):
             url = tag.get("href")
             if url:
                 new_urls.append(url)
-
+                
+        new_urls = validate_url(url, new_urls)                
         return new_urls, text
 
     except requests.RequestException as e:
@@ -62,8 +63,20 @@ si = SolrIndex(data_path=None, core="crawldb")
 
 total_rows = df_mapped.count()
 
+def addfields(urls, fetch_depth):
+    json_objects = []
+    for url in urls:
+        data = {
+            "url": url,
+            "fetch_depth":fetch_depth+1,
+            "status":"UNFETCHED"
+        }
+        json_objects.append(data)
+    #FIX ME URL
+    si.index_docs("http://localhost:8983/solr/crawldb/", json_objects)
 
-def addfields(df_batch):
+
+def updatefields(df_batch):
     json_objects = []
     for json_string in df_batch.toJSON().collect():
         data = json.loads(json_string)
@@ -72,7 +85,10 @@ def addfields(df_batch):
         data["text"] = {"add": text}
 
         outlinks = data["outlinks"]
-        outlinks = validate_url(data["url"], outlinks)
+        
+        #FIX ME
+        addfields(outlinks, 0)
+        
         data["outlinks"] = {"add": outlinks}
 
         data["status"] = {"set": "FETCHED"}
@@ -84,7 +100,7 @@ def addfields(df_batch):
 # Loop through the DataFrame in batches of 1000 rows
 for offset in range(0, total_rows, si.batch_size):
     df_batch = df_mapped.limit(si.batch_size).offset(offset)
-    stream = addfields(df_batch)
+    stream = updatefields(df_batch)
     si.index_docs(solr_url=si.solr_url, stream=stream)
     si.commit(solr_url=si.solr_url)
 

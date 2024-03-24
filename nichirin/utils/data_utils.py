@@ -8,21 +8,27 @@ def load_yaml(path):
         return yaml.safe_load(stream)
 
 
-def is_valid_url(url):
-    "Check if a URL is valid."
-    parsed_url = urlparse(url)
-    return bool(parsed_url.scheme) and bool(parsed_url.netloc)
+def is_valid_url(root, url):
+    # Check if a URL is valid.
+    parsed_url = urlparse(url) 
+    if bool(parsed_url.scheme) and bool(parsed_url.netloc):
+        return url
+    
+    if bool(parsed_url.path) and not url.startswith(("java", "javascript")):
+        return root + url
+    return False
 
 
-def filter_urls(urls):
-    "Filter out unwanted URLs."
+def filter_urls(root, urls):
+    # Filter out unwanted URLs.
     filtered_urls = []
     for url in urls:
-        if is_valid_url(url) and not url.startswith(("java", "javascript")):
-            filtered_urls.append(url)
+        output = is_valid_url(root, url) 
+        if not isinstance(output, bool):
+            filtered_urls.append(output)
     return filtered_urls
 
 
 def validate_url(root, urls):
-    filtered_urls = filter_urls(urls)
+    filtered_urls = filter_urls(root, urls)
     return filtered_urls
