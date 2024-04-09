@@ -1,15 +1,16 @@
-# Nichirin: Simplified Data Indexing with Apache Solr
+# Nichirin: A custom search framework featuring augmented generation with retrieval capabilities.
 
 ## Overview
-**Nichirin** is a powerful tool designed to streamline data indexing using **Apache Solr**. If you're dealing with large datasets and need efficient search capabilities, Nichirin has got you covered. Here's what you need to know:
+**Nichirin** serves as an advanced layer atop Apache Solr, facilitating seamless data indexing operations.
 
 1. **What is Nichirin?**
    - **Nichirin** acts as a surface or layer on top of **Apache Solr**, making data indexing a breeze.
    - It abstracts away the complexities of Solr indexing, allowing users to focus on providing their data without worrying about the nitty-gritty details.
 
 2. **Key Features:**
-   - **Effortless Indexing**: Users simply provide their data and follow a few straightforward commands mentioned in the documentation.
-   - **Automated Handling**: Nichirin takes care of the indexing process, ensuring optimal performance and efficiency.
+   - **Multi-level Crawling**: Performs multi-level web crawling utilizing a depth-first search methodology, with text indexing and retrieval facilitated through Apache Solr.
+   - **Efficient Indexing**: Integrated Apache Spark for parallel processing of URLs, improving the scalability and efficiency of both web crawling and text indexing.
+   - **Python package**: Available as a Python package on PyPI for easy installation and integration
 
 <!-- '''3. **Getting Started:**
    - **Installation**: Clone this repository and follow the installation instructions in the Installation Guide.
