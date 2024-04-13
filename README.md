@@ -38,6 +38,11 @@
 * `index-solr --data-path <path to dataset> --core <core to which the data needs to be sent>` index the data  
 * `query-solr --input_sen <input sen> --core_name <core name to query from>` query the data from solr
 
+## Quickstart
+* Once after setting up the solr, creating cores run `seed-urls --core <core name> --urls <urls separted with commas>` command to add seed urls
+* Now that you have added seed urls, run `start-crawler` commad, this might take a while.
+* Once the crawling is completed, to view the results run  the command `start-serve` this will start the flask web app.
+
 Contributing and Feedback:
 We welcome contributions! If you’d like to enhance Nichirin or report issues, feel free to submit a pull request.
 For feedback or questions, open an issue on our GitHub repository.
