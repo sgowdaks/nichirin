@@ -6,11 +6,6 @@ from .utils.data_utils import validate_url
 import requests
 import json
 
-#create spark session
-spark = SparkSession.builder.appName("URLMapOperations").getOrCreate()
-si = SolrIndex(data_path=None, core="crawldb")
-depth = 5
-
 def fetchndump():
 
     solr_query = {"q": "status:UNFETCHED", "fl": "id,url,fetch_depth"}
@@ -118,11 +113,23 @@ def spark_rdd(urls):
         si.commit(solr_url=si.solr_url)
 
 
-urls = fetchndump()
-
-while len(urls) > 0:
-    spark_rdd(urls)
+def main():
+    
+    #create spark session
+    global si, spark, depth
+    spark = SparkSession.builder.appName("URLMapOperations").getOrCreate()
+    si = SolrIndex(data_path=None, core="crawldb")
+    depth = 5
+    
     urls = fetchndump()
 
-spark.stop()
+    while len(urls) > 0:
+        spark_rdd(urls)
+        urls = fetchndump()
+
+    spark.stop()
+
+
+if __name__ == "__main__":
+    main()
     

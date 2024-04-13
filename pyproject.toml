@@ -45,8 +45,8 @@ query-solr="nichirin.retriever.solr:main"
 create-core="nichirin.scripts.create_core:main"
 partition-data="nichirin.scripts.data_partition:main"
 seed-urls="nichirin.scripts.seed_urls:main"
-start-crawler="nichirin.crawler"
-start-serve="nichirin.serve.app"
+start-crawler="nichirin.crawler:main"
+start-serve="nichirin.serve.app:main"
 
 [tool.setuptools]
 include-package-data = true
