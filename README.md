@@ -1,4 +1,5 @@
 # Nichirin: A custom search framework featuring augmented generation with retrieval capabilities.
+[![image](http://img.shields.io/pypi/v/nichirin.svg)](https://pypi.python.org/pypi/nichirin/)
 
 ## Overview
 **Nichirin** serves as an advanced layer atop Apache Solr, facilitating seamless data indexing operations.
@@ -28,7 +29,7 @@
    > data.csv
    Data source accepted. Initializing indexing...
    Indexing complete! Your data is now searchable via Solr.  -->
-   
+
 ## Commands
 * `install-solr` to install solr
 * `create-core --core <core name>` to create solr core, 
