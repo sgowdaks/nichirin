@@ -44,6 +44,7 @@ index-solr="nichirin.retriever.solr_index_docs:main"
 query-solr="nichirin.retriever.solr:main"
 create-core="nichirin.scripts.create_core:main"
 partition-data="nichirin.scripts.data_partition:main"
+seed-urls="nichirin.scripts.seed_urls:main"
 
 [tool.setuptools]
 include-package-data = true
