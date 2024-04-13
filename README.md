@@ -30,18 +30,28 @@
    Indexing complete! Your data is now searchable via Solr.  -->
    
 ## Commands
-<!-- pipeline = "nichirin.pipeline:main" -->
 * `install-solr` to install solr
 * `create-core --core <core name>` to create solr core, 
 * `partition-data --path <path to the dataset>` to partition the data
 * `pipeline --path <path to the dataset>` generate embeddings of the partition data
 * `index-solr --data-path <path to dataset> --core <core to which the data needs to be sent>` index the data  
 * `query-solr --input_sen <input sen> --core_name <core name to query from>` query the data from solr
+* `seed-urls --core <core name> --urls <urls separted with commas>` to add the seed urls
+* `start-crawler` to start the web crawler
+* `start-serve` to start the web server
 
 ## Quickstart
-* Once after setting up the solr, creating cores run `seed-urls --core <core name> --urls <urls separted with commas>` command to add seed urls
+1. Begin by executing the `install-solr` command to install the Solr application.
+2. Next, create the cores using the `create-core` command.
+3. After setting up Solr and creating the cores, add seed URLs by running the `seed-urls` command.
+4. Once the seed URLs are added, initiate the crawling process with the `start-crawler` command. Be patient, as this step may take some time.
+5. Finally, to view the results, launch the Flask web app using the `start-serve` command.
+
+<!-- * Run `install-solr` to install the solr application.
+* To create the cores, run `create-core` command.
+* Once after setting up the solr, creating cores run `seed-urls` command to add seed urls.
 * Now that you have added seed urls, run `start-crawler` commad, this might take a while.
-* Once the crawling is completed, to view the results run  the command `start-serve` this will start the flask web app.
+* Once the crawling is completed, to view the results run  the command `start-serve` this will start the flask web app. -->
 
 Contributing and Feedback:
 We welcome contributions! If you’d like to enhance Nichirin or report issues, feel free to submit a pull request.
