@@ -36,7 +36,7 @@ def data_handeler_route():
         return result, 400
     texts = [story][0]
     try:
-        response = solr.get_response(texts, "wiki")
+        response = solr.get_response(texts, "crawldb")
         # need to add core_name
         result["output"] = response
     except Exception as e:
