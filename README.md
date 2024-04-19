@@ -1,4 +1,4 @@
-# Nichirin: A custom search framework featuring augmented generation with retrieval capabilities.
+# Nichirin: : A Retrieval Augmented Generation framework combined with webcrawler.
 [![image](http://img.shields.io/pypi/v/nichirin.svg)](https://pypi.python.org/pypi/nichirin/)
 
 ## Overview
