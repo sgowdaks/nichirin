@@ -41,7 +41,7 @@ git clone https://github.com/sgowdaks/nichirin
 cd nichirin
 pip install -e .
 
-# Option 3: install from pipy
+# Option 3: install from PyPI
 pip install nichirin
 ```
 
