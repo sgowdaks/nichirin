@@ -47,6 +47,10 @@
 3. After setting up Solr and creating the cores, add seed URLs by running the `seed-urls` command.
 4. Once the seed URLs are added, initiate the crawling process with the `start-crawler` command. Be patient, as this step may take some time.
 5. Finally, to view the results, launch the Flask web app using the `start-serve` command.
+   
+This starts a service on http://127.0.0.1:5000 by default.
+
+<img src="docs/demo-page.png" width=600px/>
 
 <!-- * Run `install-solr` to install the solr application.
 * To create the cores, run `create-core` command.
