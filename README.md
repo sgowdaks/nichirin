@@ -30,6 +30,24 @@
    Data source accepted. Initializing indexing...
    Indexing complete! Your data is now searchable via Solr.  -->
 
+## Setup
+
+```bash
+# Option 1: install as read only; recommended to use as is
+pip install git+https://github.com/sgowdaks/nichirin
+
+# Option 2: install for editable mode; recommended if you'd like to modify code
+git clone https://github.com/sgowdaks/nichirin
+cd nichirin
+pip install -e .
+
+# Option 3: install from pipy
+pip install nichirin
+```
+
+
+
+
 ## Commands
 * `install-solr` to install solr
 * `create-core --core <core name>` to create solr core, 
